@@ -16,7 +16,7 @@ public class ShellCommands {
 
     @Command(name = "generar", description = "Comienza la decodificacion y generacion de los documentos")
     public void generar(){
-
+        service.verificarCarpetas();
         service.extraerDocumentos();
 
     }
