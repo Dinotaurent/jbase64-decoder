@@ -4,6 +4,9 @@ import com.dinotaurent.jbase64_decoder.service.ShellService;
 import org.springframework.shell.core.command.annotation.Command;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.util.List;
+
 @Component
 public class ShellCommands {
 
@@ -15,9 +18,14 @@ public class ShellCommands {
     }
 
     @Command(name = "generar", description = "Comienza la decodificacion y generacion de los documentos")
-    public void generar(){
+    public void generar() throws IOException {
         service.verificarCarpetas();
-        service.extraerDocumentos();
+        List<String> documentos = service.extraerDocumentos();
+
+        if (documentos.isEmpty()) {
+            return;
+        }
+        IO.println(documentos);
 
     }
 }
