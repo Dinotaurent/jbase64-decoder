@@ -38,3 +38,6 @@ build/
 !.env.example
 
 logs/*
+ingreso.txt
+pruebas.zip
+pruebas
