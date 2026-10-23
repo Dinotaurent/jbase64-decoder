@@ -18,7 +18,10 @@ import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 
 @Service
@@ -83,18 +86,46 @@ public class ShellService {
                 byte[] salida = Base64.getDecoder().decode(documentos.get(i).getBytes(StandardCharsets.UTF_8));
 
                 // Construir la ruta de salida dinamica.
-                Path rutaSalida = Paths.get("./salida_txt", "documento_" + i + ".txt");
+                Path rutaSalidaTxt = Paths.get("./salida_txt", "documento_" + i + ".txt");
 
                 // Crear el documento .txt.
-                Files.write(rutaSalida, salida);
-                IO.println("Se crea el documento: " + rutaSalida.getFileName().toString());
+                Files.write(rutaSalidaTxt, salida);
+                IO.println("Se crea el documento: " + rutaSalidaTxt.getFileName().toString());
+            }
+
+            if(preguntar()){
+                comprimir();
+            } else {
+                IO.println("No se genero el .zip a solicitud del usuario.");
             }
         } catch (Exception e){
             IO.println("No se pudo generar el documento: "  + e.getMessage());
         }
     }
 
-    public void comprimir(){}
+    public void comprimir(){
+        IO.println("Se ejecuta el metodo comprimir");
+        Path rutaOrigenTxt = Paths.get("./salida_txt");
+        Path rutaSalidaZip = Paths.get("./salida_zip", "documentos_procesados.zip");
+
+        try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(rutaSalidaZip));
+             Stream<Path> archivos = Files.walk(rutaOrigenTxt)) {
+
+            for (Path pathTxt : (Iterable<Path>) archivos
+                    .filter(p -> Files.isRegularFile(p) && p.toString().endsWith(".txt"))::iterator)
+            {
+                ZipEntry zipEntry = new ZipEntry(rutaOrigenTxt.relativize(pathTxt)
+                        .toString().replace('\\', '/'));
+
+                zos.putNextEntry(zipEntry);
+                Files.copy(pathTxt, zos);
+                zos.closeEntry();
+            }
+            IO.println("Se genero el archivo comprimido en: " + rutaSalidaZip);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private boolean validarIngreso() {
         Path ruta = Paths.get("./ingreso.txt");
@@ -105,5 +136,18 @@ public class ShellService {
         }
 
         return true;
+    }
+
+    private boolean preguntar() {
+        while (true) {
+            String input = lineReader.readLine( "¿Desea generar el .zip? (y/n): ")
+                    .trim()
+                    .toLowerCase();
+
+            if (input.equals("y")) return true;
+            if (input.equals("n")) return false;
+
+            IO.println("Opción inválida — ingresa 'y' o 'n'");
+        }
     }
 }
