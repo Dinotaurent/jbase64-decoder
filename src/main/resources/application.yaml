@@ -6,6 +6,11 @@ spring:
     # Quita los logs de arranque de spring
     log-startup-info: false
 
+  # Para que Spring shell no cree logs fisicos de los comandos.
+  shell:
+    history:
+      enabled: false
+
   application:
     name: jbase64-decoder
 
@@ -17,6 +22,7 @@ spring:
   # Para que spring cargue el .env
   config:
     import: optional:file:.env[.properties]
+
 
 application:
   title: JBase64-decoder
