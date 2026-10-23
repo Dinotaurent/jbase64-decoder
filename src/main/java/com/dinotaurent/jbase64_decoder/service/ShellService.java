@@ -3,10 +3,8 @@ package com.dinotaurent.jbase64_decoder.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jline.reader.LineReader;
-import org.jline.terminal.Terminal;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -14,9 +12,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import java.util.Base64;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -27,12 +24,10 @@ import java.util.zip.ZipOutputStream;
 @Service
 public class ShellService {
 
-    private final Terminal terminal;
     private final LineReader lineReader;
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    public ShellService(Terminal terminal,@Lazy LineReader lineReader) {
-        this.terminal = terminal;
+    public ShellService(@Lazy LineReader lineReader) {
         this.lineReader = lineReader;
     }
 
@@ -78,7 +73,8 @@ public class ShellService {
 
     }
 
-    public void generar(List<String> documentos){
+    public void generar(List<String> documentos) throws IOException {
+        limpiarCarpetas();
 
         try {
             for(int i=0;i<documentos.size();i++){
@@ -104,7 +100,7 @@ public class ShellService {
     }
 
     public void comprimir(){
-        IO.println("Se ejecuta el metodo comprimir");
+//        IO.println("Se ejecuta el metodo comprimir");
         Path rutaOrigenTxt = Paths.get("./salida_txt");
         Path rutaSalidaZip = Paths.get("./salida_zip", "documentos_procesados.zip");
 
@@ -148,6 +144,29 @@ public class ShellService {
             if (input.equals("n")) return false;
 
             IO.println("Opción inválida — ingresa 'y' o 'n'");
+        }
+    }
+
+    public void limpiarCarpetas() throws IOException {
+        limpiarCarpeta(Paths.get("./salida_txt"));
+        limpiarCarpeta(Paths.get("./salida_zip"));
+    }
+
+    private void limpiarCarpeta(Path carpeta) throws IOException {
+        if (!Files.exists(carpeta)) {
+            return;
+        }
+
+        try (Stream<Path> rutas = Files.walk(carpeta)) {
+            rutas.sorted(Comparator.reverseOrder())
+                    .filter(ruta -> !ruta.equals(carpeta))
+                    .forEach(ruta -> {
+                        try {
+                            Files.delete(ruta);
+                        } catch (IOException e) {
+                            throw new UncheckedIOException(e);
+                        }
+                    });
         }
     }
 }
