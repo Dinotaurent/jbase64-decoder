@@ -99,7 +99,7 @@ public class ShellService {
         }
     }
 
-    public void comprimir(){
+    private void comprimir(){
 //        IO.println("Se ejecuta el metodo comprimir");
         Path rutaOrigenTxt = Paths.get("./salida_txt");
         Path rutaSalidaZip = Paths.get("./salida_zip", "documentos_procesados.zip");
@@ -147,7 +147,7 @@ public class ShellService {
         }
     }
 
-    public void limpiarCarpetas() throws IOException {
+    private void limpiarCarpetas() throws IOException {
         limpiarCarpeta(Paths.get("./salida_txt"));
         limpiarCarpeta(Paths.get("./salida_zip"));
     }
