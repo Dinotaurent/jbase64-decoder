@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.dinotaurent</groupId>
 	<artifactId>jbase64-decoder</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name/>
 	<description/>
 	<url/>
@@ -33,7 +33,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.shell</groupId>
-			<artifactId>spring-shell-starter</artifactId>
+			<artifactId>spring-shell-starter-ffm</artifactId>
 		</dependency>
 
 		<dependency>
