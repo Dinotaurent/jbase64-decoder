@@ -1,0 +1,23 @@
+spring:
+
+  main:
+    # Quita el banner de Spring Boot en "off", "console" tambien es buena opcion.
+    banner-mode: "console"
+    # Quita los logs de arranque de spring
+    log-startup-info: false
+
+  application:
+    name: jbase64-decoder
+
+  # Hilos virtuales de java
+  threads:
+    virtual:
+      enabled: true
+
+  # Para que spring cargue el .env
+  config:
+    import: optional:file:.env[.properties]
+
+application:
+  title: JBase64-decoder
+  version: 1.0.0
