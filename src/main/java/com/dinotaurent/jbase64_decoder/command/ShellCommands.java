@@ -22,10 +22,17 @@ public class ShellCommands {
         service.verificarCarpetas();
         List<String> documentos = service.extraerDocumentos();
 
-        if (documentos.isEmpty()) {
+        if (documentos == null) {
             return;
         }
-        IO.println(documentos);
+
+        if (documentos.isEmpty()) {
+            IO.println("Todos los JSON deben contener el document");
+//            IO.println(documentos);
+            return;
+        }
+
+        service.generar(documentos);
 
     }
 }

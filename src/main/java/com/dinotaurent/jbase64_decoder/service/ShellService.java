@@ -10,10 +10,12 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.StreamSupport;
@@ -57,10 +59,10 @@ public class ShellService {
     }
 
     public List<String> extraerDocumentos() throws IOException {
-        IO.println("Se ejecuta el metodo extraerDocumentos");
+//        IO.println("Se ejecuta el metodo extraerDocumentos");
 
         if (!validarIngreso()) {
-            return List.of();
+            return null;
         }
 
         File archivo = Paths.get("./ingreso.txt").toFile();
@@ -73,7 +75,24 @@ public class ShellService {
 
     }
 
-    public void generar(){}
+    public void generar(List<String> documentos){
+
+        try {
+            for(int i=0;i<documentos.size();i++){
+                // Decodificar el documento.
+                byte[] salida = Base64.getDecoder().decode(documentos.get(i).getBytes(StandardCharsets.UTF_8));
+
+                // Construir la ruta de salida dinamica.
+                Path rutaSalida = Paths.get("./salida_txt", "documento_" + i + ".txt");
+
+                // Crear el documento .txt.
+                Files.write(rutaSalida, salida);
+                IO.println("Se crea el documento: " + rutaSalida.getFileName().toString());
+            }
+        } catch (Exception e){
+            IO.println("No se pudo generar el documento: "  + e.getMessage());
+        }
+    }
 
     public void comprimir(){}
 
